@@ -13,7 +13,7 @@ class MyUtils {
     public List<String> strSort(List<String> originList) {
         return originList.stream()
                 .sorted(Comparator.comparing(String::length)
-                .thenComparing(Comparator.naturalOrder()))
+                                  .thenComparing(Comparator.naturalOrder()))
                 .collect(Collectors.toList());
     }
 
