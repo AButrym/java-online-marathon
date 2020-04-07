@@ -11,12 +11,14 @@ import java.util.Set;
  */
 class MyUtils {
     public static class Student {
-        private int id;
-        private String name;
+        private final int id;
+        private final String name;
+        private final int hash;
 
         public Student(int id, String name) {
             this.id = id;
             this.name = name;
+            hash = Objects.hash(id, name);
         }
 
         @Override
@@ -30,15 +32,12 @@ class MyUtils {
 
         @Override
         public int hashCode() {
-            return Objects.hash(id, name);
+            return hash;
         }
 
         @Override
         public String toString() {
-            return "Student{" +
-                    "id=" + id +
-                    ", name='" + name + '\'' +
-                    '}';
+            return String.format("Student{id=%d, name='%s'}", id, name);
         }
     }
     public Set<Student> commonStudents(List<Student> list1, List<Student> list2) {
@@ -49,9 +48,15 @@ class MyUtils {
 
     public static void main(String[] args) {
         // smoke test
-        List<Student> list1 = List.of(new Student(1, "Joe"), new Student(2, "Alice"));
-        List<Student> list2 = List.of(new Student(1, "Jack"), new Student(2, "Alice"), new Student(3, "Bob"));
+        // l1 = [Students [id=1, name=Ivan], Students [id=2, name=Petro], Students [id=3, name=Stepan]]
+        List<Student> list1 = List.of(new Student(1, "Ivan"),
+                                      new Student(2, "Petro"),
+                                      new Student(3, "Stepan"));
+        // l2 = [Students [id=1, name=Ivan], Students [id=3, name=Stepan], Students [id=4, name=Andriy]]
+        List<Student> list2 = List.of(new Student(1, "Ivan"),
+                                      new Student(3, "Stepan"),
+                                      new Student(4, "Andriy"));
         Set<Student> res = new MyUtils().commonStudents(list1, list2);
-        System.out.println(res);
+        System.out.println(res); // [Students [id=3, name=Stepan], Students [id=1, name=Ivan]]
     }
 }
