@@ -20,7 +20,7 @@ class App {
     };
 
     public static double[] getChanged(double[] initialArray, Consumer<double[]> consumer) {
-        double[] res = Arrays.copyOf(initialArray, initialArray.length);
+        double[] res = initialArray.clone();
         consumer.accept(res);
         return res;
     }
