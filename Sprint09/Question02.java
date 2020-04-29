@@ -18,7 +18,7 @@ class MyUtils {
     );
 
     public boolean verifyBrackets(String text) {
-        text = text.replaceAll("\\Q\\\\E[\\Q(){}[]\\E]", "");
+        text = text.replaceAll("\\\\[\\Q(){}[]\\E]", "");
         Deque<Character> stack = new ArrayDeque<>();
         for (char ch : text.toCharArray()) {
             switch (ch) {
