@@ -1,9 +1,6 @@
 import java.util.Arrays;
 import java.util.Comparator;
 
-import static java.util.Comparator.nullsFirst;
-import static java.util.Comparator.comparing;
-
 /*
  * Create classes with name PersonComparator, EmployeeComparator, DeveloperComparator that implement
  *  the Comparator<Type> generic interface.
@@ -82,32 +79,35 @@ enum Level {
 }
 
 class PersonComparator implements Comparator<Person> {
+    final static Comparator<Person> INSTANCE = Comparator.nullsFirst(
+            Comparator.comparing(Person::getName)
+                    .thenComparingInt(Person::getAge));
+
     @Override
     public int compare(Person o1, Person o2) {
-        return nullsFirst(comparing(Person::getName)
-                .thenComparingInt(Person::getAge))
-                .compare(o1, o2);
+        return INSTANCE.compare(o1, o2);
     }
 }
 
 class EmployeeComparator implements Comparator<Employee> {
+    final static Comparator<Employee> INSTANCE =
+            Comparator.<Employee, Person>comparing(Person.class::cast, PersonComparator.INSTANCE)
+                    .thenComparing(Employee::getSalary);
+
     @Override
     public int compare(Employee o1, Employee o2) {
-        return nullsFirst(comparing(Employee::getName)
-                .thenComparingInt(Employee::getAge)
-                .thenComparingDouble(Employee::getSalary))
-                .compare(o1, o2);
+        return INSTANCE.compare(o1, o2);
     }
 }
 
 class DeveloperComparator implements Comparator<Developer> {
+    final static Comparator<Developer> INSTANCE =
+            Comparator.<Developer, Employee>comparing(Employee.class::cast, EmployeeComparator.INSTANCE)
+                    .thenComparing(Developer::getLevel);
+
     @Override
     public int compare(Developer o1, Developer o2) {
-        return nullsFirst(comparing(Developer::getName)
-                .thenComparingInt(Developer::getAge)
-                .thenComparingDouble(Developer::getSalary)
-                .thenComparing(Developer::getLevel))
-                .compare(o1, o2);
+        return INSTANCE.compare(o1, o2);
     }
 }
 
@@ -118,15 +118,25 @@ class Utility {
 }
 
 class StringComparator implements Comparator<String> {
-     @Override
-     public int compare(String s1, String s2) { return 0; }
- }
+    @Override
+    public int compare(String s1, String s2) {
+        return 0;
+    }
+}
 
 class Main {
     public static void main(String[] args) {
-        String[] data = new String[]{ "ca", "ab", "dc", "bd" };
-        System.out.println(Arrays.toString(data));
-        Utility.sortPeople(data, new StringComparator());
-        System.out.println(Arrays.toString(data));
+        // smoke test
+        Person[] persons = new Person[]{
+                new Person("B", 2),
+                new Person("B", 1),
+                new Person("A", 2)
+        };
+        System.out.println(Arrays.toString(persons));
+        Utility.sortPeople(persons, new PersonComparator());
+        System.out.println(Arrays.toString(persons));
+
+        // compile error:
+        // Utility.sortPeople(new String[] {"ab", "bc", "cd"}, new StringComparator());
     }
 }
