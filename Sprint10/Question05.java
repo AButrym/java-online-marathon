@@ -92,7 +92,7 @@ class PersonComparator implements Comparator<Person> {
 class EmployeeComparator implements Comparator<Employee> {
     final static Comparator<Employee> INSTANCE =
             Comparator.<Employee, Person>comparing(Person.class::cast, PersonComparator.INSTANCE)
-                    .thenComparing(Employee::getSalary);
+                    .thenComparingDouble(Employee::getSalary);
 
     @Override
     public int compare(Employee o1, Employee o2) {
