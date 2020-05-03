@@ -1,5 +1,7 @@
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /*
  * Create classes with name PersonComparator, EmployeeComparator, DeveloperComparator that implement
@@ -39,7 +41,7 @@ class Person {
 }
 
 class Employee extends Person {
-    private double salary;
+    private final double salary;
 
     public Employee(String name, int age, double salary) {
         super(name, age);
@@ -57,7 +59,7 @@ class Employee extends Person {
 }
 
 class Developer extends Employee {
-    private Level level;
+    private final Level level;
 
     public Developer(String name, int age, double salary, Level level) {
         super(name, age, salary);
@@ -91,7 +93,8 @@ class PersonComparator implements Comparator<Person> {
 
 class EmployeeComparator implements Comparator<Employee> {
     final static Comparator<Employee> INSTANCE =
-            Comparator.<Employee, Person>comparing(Person.class::cast, PersonComparator.INSTANCE)
+            Comparator.<Employee, Person>comparing(Function.identity(),
+                    PersonComparator.INSTANCE)
                     .thenComparingDouble(Employee::getSalary);
 
     @Override
@@ -102,7 +105,8 @@ class EmployeeComparator implements Comparator<Employee> {
 
 class DeveloperComparator implements Comparator<Developer> {
     final static Comparator<Developer> INSTANCE =
-            Comparator.<Developer, Employee>comparing(Employee.class::cast, EmployeeComparator.INSTANCE)
+            Comparator.<Developer, Employee>comparing(Function.identity(),
+                    EmployeeComparator.INSTANCE)
                     .thenComparing(Developer::getLevel);
 
     @Override
@@ -114,13 +118,6 @@ class DeveloperComparator implements Comparator<Developer> {
 class Utility {
     public static <T extends Person> void sortPeople(T[] people, Comparator<? super T> comparator) {
         Arrays.sort(people, comparator);
-    }
-}
-
-class StringComparator implements Comparator<String> {
-    @Override
-    public int compare(String s1, String s2) {
-        return 0;
     }
 }
 
@@ -136,7 +133,27 @@ class Main {
         Utility.sortPeople(persons, new PersonComparator());
         System.out.println(Arrays.toString(persons));
 
+        Developer[] developers = new Developer[] {
+                new Developer("B", 2, 10_000, Level.MIDDLE),
+                new Developer("B", 2, 10_000, Level.JUNIOR),
+                new Developer("B", 2, 20_000, Level.JUNIOR),
+                new Developer("B", 1, 10_000, Level.JUNIOR),
+                new Developer("A", 2, 10_000, Level.SENIOR)
+        };
+        System.out.println(Arrays.stream(developers).map(Developer::toString)
+                .collect(Collectors.joining(",\n","[", "]")));
+        Utility.sortPeople(developers, new DeveloperComparator());
+        System.out.println(Arrays.stream(developers).map(Developer::toString)
+                .collect(Collectors.joining(",\n","[", "]")));
+
+
+        /*class StringComparator implements Comparator<String> {
+            @Override
+            public int compare(String s1, String s2) {
+                return 0;
+            }
+        }
         // compile error:
-        // Utility.sortPeople(new String[] {"ab", "bc", "cd"}, new StringComparator());
+        Utility.sortPeople(new String[] {"ab", "bc", "cd"}, new StringComparator());*/
     }
 }
