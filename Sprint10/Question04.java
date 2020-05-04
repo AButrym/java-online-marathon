@@ -10,7 +10,7 @@ Examples of usage:
 
 class ArrayUtil {
 
-    public static <T extends Number> double averageValue(Array<T> arr) {
+    public static double averageValue(Array<? extends Number> arr) {
         double sum = 0;
         int len = arr.length();
         for (int i = 0; i < len; i++) {
