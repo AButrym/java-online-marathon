@@ -6,8 +6,11 @@
 class ArrayUtil {
     
     public static <T> T setAndReturn(T[] arr, T setValue, int atIndex) {
-        arr[atIndex] = setValue;
-        return setValue;
+        if (0 <= atIndex && atIndex < arr.length) {
+            arr[atIndex] = setValue;
+            return arr[atIndex];
+        }
+        return null;
     }
     
 }
