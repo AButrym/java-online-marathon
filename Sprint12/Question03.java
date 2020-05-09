@@ -56,14 +56,15 @@ Serving thread resumed
 
 class Interactor {
 
-    private volatile int x;
-    private volatile boolean consumed = false;
+    private int x;
+    private volatile boolean consumed;
 
     public synchronized void serve(UnaryOperator<Integer> uo, int initializer) throws InterruptedException {
         System.out.println("Serving thread running");
         x = uo.apply(initializer);
         System.out.println("Serving thread initializes the key");
         System.out.println("key = " + x);
+        consumed = false;
         notifyAll();
         while (!consumed) {
             wait();
