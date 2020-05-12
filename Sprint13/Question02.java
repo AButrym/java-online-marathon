@@ -13,8 +13,15 @@ class Question02 {
         if (month < Calendar.JANUARY || Calendar.DECEMBER < month) {
             return "Wrong Month";
         }
-        Calendar calendar = new GregorianCalendar(year, month + 1, 1); // next month
-        calendar.add(Calendar.DAY_OF_MONTH, -1); // one day back
+
+        //Calendar calendar = new GregorianCalendar(year, month + 1, 1); // next month
+        //calendar.add(Calendar.DAY_OF_MONTH, -1); // one day back
+
+        //Alternative:
+        Calendar calendar = new GregorianCalendar(year, month, 1);
+        calendar.set(Calendar.DAY_OF_MONTH,
+            calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+
         return calendar.getDisplayName(
                 Calendar.DAY_OF_WEEK, Calendar.LONG, java.util.Locale.US);
     }
