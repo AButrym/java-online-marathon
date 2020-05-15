@@ -15,47 +15,33 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class MyUtils {
-    private static class PhoneNumber {
-        String areaCode;
-        String number;
-
-        PhoneNumber(String areaCode, String number) {
-            this.areaCode = areaCode;
-            this.number = number;
-        }
-
-        static PhoneNumber parse(String s) {
-            s = s.replaceAll("[- )(]", "");
-            if (s.matches("\\d{10}")) {
-                return new PhoneNumber(s.substring(0, 3), s.substring(3));
-            } else if (s.matches("\\d{7}")) {
-                return new PhoneNumber("loc", s);
-            } else {
-                return new PhoneNumber("err", s);
+    public Map<String, Stream<String>> phoneNumbers(List<Stream<String>> list) {
+        class PhoneNumber {
+            String areaCode;
+            String number;
+            PhoneNumber(String s) {
+                s = s.replaceAll("[- )(]", "");
+                if (s.matches("\\d{10}")) {
+                    areaCode = s.substring(0, 3);
+                    number = s.substring(3);
+                } else {
+                    areaCode = s.matches("\\d{7}") ? "loc" : "err";
+                    number = s;
+                }
             }
         }
-
-        public String getAreaCode() {
-            return areaCode;
-        }
-
-        public String getNumber() {
-            return number;
-        }
-    }
-
-    public Map<String, Stream<String>> phoneNumbers(List<Stream<String>> list) {
         return list.stream()
                 .filter(Objects::nonNull)
                 .flatMap(Function.identity())
                 .filter(Objects::nonNull)
                 .filter(Predicate.not(String::isBlank))
-                .map(PhoneNumber::parse)
+                .map(PhoneNumber::new)
                 .collect(Collectors.groupingBy(
-                        PhoneNumber::getAreaCode,
-                        Collectors.mapping(PhoneNumber::getNumber,
-                                Collectors.collectingAndThen(Collectors.toCollection(TreeSet::new),
-                                        TreeSet::stream))));
+                        phoneNumber -> phoneNumber.areaCode,
+                        Collectors.mapping(phoneNumber -> phoneNumber.number,
+                                Collectors.collectingAndThen(
+                                        Collectors.toCollection(TreeSet::new), // sorting
+                                        Collection::stream))));
     }
 
     public static void main(String[] args) {
