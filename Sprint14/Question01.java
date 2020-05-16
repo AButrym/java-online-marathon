@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 
 class MyUtils {
     public Stream<String> nameList(Map<String, Stream<String>> map) {
-        Objects.requireNonNull(map);
         return map.values().stream()
                 .filter(Objects::nonNull)
                 .flatMap(Function.identity())
